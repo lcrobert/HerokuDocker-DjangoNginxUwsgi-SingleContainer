@@ -71,7 +71,7 @@ Last update : 20191231<br/><br/>
 
   - Nginx 與  uwsgi 之間使用 Unix sockets ，會由 uwsgi 生成 file socket 文件，所以路徑就保持與 uwsgi.ini 一致即可，然後因為檔案權限問題，路徑須設在 /tmp 或是 /var/run 中，nginx 和 uwsgi 才能有辦法對 file socket 操作，777 的設定也才能有效。
   - upstream 後接的 django 只是變數名稱，可自行改成其他變數名。
-  - <span style="background-color:lightblue;">listen ${PORT};</span> 是 nginx 取得 heroku PORT 的關鍵，${PORT} 作為 placeholder，在容器啟動過程中，使用 <span style="background-color:lightgray;">envsubst</span> 指令將環境變數 PORT 值填入，再轉存為 nginx 真正讀取的設定檔 **pysaweb_nginx.conf** 。
+  - `listen ${PORT};` 是 nginx 取得 heroku PORT 的關鍵，`${PORT}` 作為 placeholder，在容器啟動過程中，使用 `envsubst` 指令將環境變數 PORT 值填入，再轉存為 nginx 真正讀取的設定檔 **pysaweb_nginx.conf** 。
   - Location 的 /media 及 /static ，建議參照專案的 settings.py 及 url.py 做設定，如果要更改實體路徑，那就必須在 settings.py 中額外加入 STATIC_ROOT 參數，然後執行 python  manage.py collectstatic 。
   - Location 的 / ， uwsgi_pass 後接的名稱要與 upstream 中的一致， 在這裡也就是 django ，而  include 後接的路徑就是接下來要提到的 **uwsgi_params** 文件。
 
@@ -192,9 +192,9 @@ uwsgi --ini /home/pysaweb/pysaweb_uwsgi.ini
   stopsignal=QUIT
   ```
 
-  - 把 logfile 訊息全轉成 /dev/stdout 輸出，因為 Heroku 會抓取 stdout & stderr 輸出到 Heroku  logs 。使用 stdout 時，logfile_maxbytes 必須為 0 。
+  - 把 logfile 訊息全轉成 `/dev/stdout` 輸出，因為 Heroku 會抓取 stdout & stderr 輸出到 Heroku  logs 。使用 stdout 時，logfile_maxbytes 必須為 0 。
 
-  - Nginx 的啟動指令要使用 nginx -g 'daemon off;' 。
+  - Nginx 的啟動指令要使用 `nginx -g 'daemon off;'` 。
 
   - 可參考  http://supervisord.org/configuration.html
 
@@ -263,7 +263,7 @@ uwsgi --ini /home/pysaweb/pysaweb_uwsgi.ini
   - 如果 django project 沒有使用到 bokeh，則跳過安裝 node.js 等套件。
   - 安裝 python packages，requirements.txt 中必須有 uwsgi 。
   - 將 django project (pysaweb) 添加到 /home 目錄底下。
-  - 接下來是重點，要處理 nginx 、uwsgi、supervisord 的文件配置，首先將 **pysaweb_nginx.conf** soft-link 到 <span style="background-color:lightgray;">/etc/nginx/sites-enabled/</span> 及 <span style="background-color:lightgray;">/etc/nginx/sites-available/</span> ，然後強制刪除這兩個目錄底下的 default ，這樣就能避免一些問題，例如 port 80 、permission denied 等問題。接下來是將 **supervisord.conf** 複製到  <span style="background-color:lightgray;">/etc/supervisor/conf.d/supervisord.conf</span> ，最後是創建 file socket 存放的目錄。
+  - 接下來是重點，要處理 nginx 、uwsgi、supervisord 的文件配置，首先將 **pysaweb_nginx.conf** soft-link 到 `/etc/nginx/sites-enabled/` 及 `/etc/nginx/sites-available/` ，然後強制刪除這兩個目錄底下的 default ，這樣就能避免一些問題，例如 port 80 、permission denied 等問題。接下來是將 **supervisord.conf** 複製到  `/etc/supervisor/conf.d/supervisord.conf` ，最後是創建 file socket 存放的目錄。
   - **pysaweb_nginx.conf** 這文件會在 container 啟動時，經由  **init.sh** 以 **pysaweb_nginx_template.conf**  為模板而創建，為了獲取正確的 Heroku PORT。
   - 最後是設定 container 的啟動指令，就是執行 **init.sh**。
 
@@ -278,7 +278,7 @@ uwsgi --ini /home/pysaweb/pysaweb_uwsgi.ini
   exec /usr/bin/supervisord
   ```
   
-  - 使用 <span style="background-color:lightgray;">envsubst</span> 將 Heroku PORT 填入 template.conf ，輸出到 nginx.conf。
+  - 使用 `envsubst` 將 Heroku PORT 填入 template.conf ，輸出到 nginx.conf。
   - 再次執行強制刪除 nginx 的 default 文件，因為根據測試的結果，部署到 Heroku 後，default 仍然在那，這就是比較奇怪的地方，所以這裡就在執行一次。
   - 最後啟動 supervisord ，它會將 Nginx 和 uWSGI 啟動為它的子程序。
 
