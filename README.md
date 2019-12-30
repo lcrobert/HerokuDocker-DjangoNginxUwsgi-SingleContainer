@@ -141,20 +141,17 @@ Last update : 20191231<br/><br/>
   - socket 就像之前說的因為權限問題，除了給予最高的 777 ，路徑也必須設在那，這可以避免出現下方 error
 
     ```
-  bind(): No such file or directory [core/socket.c line 230]
+    bind(): No such file or directory [core/socket.c line 230]
     ```
-  
-  - processes 及 treads ，[uwsgi官方文件](https://uwsgi-docs.readthedocs.io/en/latest/tutorials/heroku_python.html)說 : 
 
-    > It obviosuly depend on your app. But as we are on a memory-limited environment you can expect better memory usage with threads.
-  >
-    > In addition to this, if you plan to put production-apps on Heroku be sure to understand how Dynos and their proxy works (it is very important. really
+  - processes 及 treads ，[uwsgi 官方文件](https://uwsgi-docs.readthedocs.io/en/latest/tutorials/heroku_python.html)說 : 
   
-  - die-on-term 及 memory-report，[uwsgi官方文件](https://uwsgi-docs.readthedocs.io/en/latest/tutorials/heroku_python.html)說 : 
+    > It obviosuly depend on your app. But as we are on a memory-limited environment you can expect better memory usage with threads. In addition to this, if you plan to put production-apps on Heroku be sure to understand how Dynos and their proxy works (it is very important. really)
+
+  - die-on-term 及 memory-report，[uwsgi 官方文件](https://uwsgi-docs.readthedocs.io/en/latest/tutorials/heroku_python.html)說 : 
   
-    > The second one (–die-on-term) is required to change the default behaviour of uWSGI when it receive a SIGTERM (brutal reload, while Heroku expect a shutdown)
-    >
-    > The memory-report option (as we are in a memory constrained environment) is a good thing.
+    > The second one (–die-on-term) is required to change the default behaviour of uWSGI when it receive a SIGTERM (brutal reload, while Heroku expect a shutdown). The memory-report option (as we are in a memory constrained environment) is a good thing.
+  
 
 ------
 
@@ -275,19 +272,15 @@ uwsgi --ini /home/pysaweb/pysaweb_uwsgi.ini
   ```bash
   #!/bin/bash
   # source /nvm/nvm.sh  
-envsubst < /home/pysaweb/pysaweb_nginx_template.conf > /home/pysaweb/pysaweb_nginx.conf
-  
+  envsubst < /home/pysaweb/pysaweb_nginx_template.conf >  /home/pysaweb/pysaweb_nginx.conf
   rm -f /etc/nginx/sites-available/default
   rm -f /etc/nginx/sites-enabled/default 
-  
   exec /usr/bin/supervisord
   ```
   
   - 使用 <span style="background-color:lightgray;">envsubst</span> 將 Heroku PORT 填入 template.conf ，輸出到 nginx.conf。
   - 再次執行強制刪除 nginx 的 default 文件，因為根據測試的結果，部署到 Heroku 後，default 仍然在那，這就是比較奇怪的地方，所以這裡就在執行一次。
   - 最後啟動 supervisord ，它會將 Nginx 和 uWSGI 啟動為它的子程序。
-
-<br>
 
 ------
 
@@ -306,4 +299,4 @@ envsubst < /home/pysaweb/pysaweb_nginx_template.conf > /home/pysaweb/pysaweb_ngi
 - https://github.com/rjoonas/heroku-docker-nginx-example
 - https://stackoverflow.com/questions/49147389/heroku-docker-port-environment-variable-in-nginx
 
-<br/><br/><br/><br/>
+<br/><br/>
