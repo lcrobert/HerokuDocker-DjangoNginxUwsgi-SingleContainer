@@ -16,7 +16,7 @@ google-auth-httplib2==0.0.3
 httplib2>=0.19.0
 idna==2.8
 imageio==2.5.0
-ipython==7.6.1
+ipython==7.16.3
 ipython-genutils==0.2.0
 jedi==0.14.0
 Jinja2==2.10.1
